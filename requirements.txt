@@ -12,9 +12,13 @@ kiwipiepy==0.20.1           # pip 단일 설치, Windows에서 별도 DLL 불필
 # SQLite 벡터 확장
 sqlite-vec==0.1.6
 
-# 임베딩 (둘 중 하나만 있어도 됨)
-sentence-transformers==5.4.1   # 로컬 모델(BAAI/bge-m3) 사용 시
-openai==1.109.1                # OpenAI 임베딩 API 사용 시
+# 임베딩 — OpenAI API와 자체 서버 모두 이 클라이언트 하나로 쓴다
+openai==1.109.1
+
+# 자체 임베딩 서버를 직접 띄울 때만 필요 (deploy/embed_openai_server.py)
+# fastapi
+# uvicorn
+# FlagEmbedding
 
 # PostgreSQL
 psycopg[binary,pool]==3.2.3

@@ -1,77 +1,65 @@
 # -*- coding: utf-8 -*-
-"""임베딩 생성기. 세 가지 백엔드를 같은 인터페이스로 제공한다.
+"""임베딩 생성기 — OpenAI API와 자체 서버를 같은 코드로 다룬다.
 
-  local   sentence-transformers 로 bge-m3 를 직접 돌린다 (기본, 무료)
-  server  OpenAI 호환 임베딩 서버에 HTTP 요청 (GPU 서버가 있을 때)
-  openai  OpenAI 임베딩 API
+자체 서버(`deploy/embed_openai_server.py`)가 OpenAI와 **같은 규격**
+(`POST /v1/embeddings`)으로 응답하므로, 바뀌는 것은 `base_url` 하나뿐이다.
+분기문도 응답 파싱 코드도 따로 둘 필요가 없다.
 
-EMBED_BACKEND 환경변수로 고른다. 어느 쪽을 쓰든 embed(texts) -> list[list[float]]
-형태로 같은 결과를 돌려주므로 이후 코드는 바뀌지 않는다.
+  EMBED_BACKEND=openai   OpenAI API        (text-embedding-3-small, 1536차원)
+  EMBED_BACKEND=server   자체 bge-m3 서버   (1024차원)
 
 사용:
   python -m src.embedder
 """
-import json
 import os
 import sys
-import urllib.request
 
 from src import config
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-BACKEND = os.environ.get("EMBED_BACKEND", "local")
-LOCAL_MODEL = os.environ.get("EMBED_LOCAL_MODEL", "BAAI/bge-m3")
+BACKEND = os.environ.get("EMBED_BACKEND", "server")
 OPENAI_MODEL = os.environ.get("EMBED_OPENAI_MODEL", "text-embedding-3-small")
+SERVER_MODEL = os.environ.get("EMBED_SERVER_MODEL", "bge-m3")
 
-_st_model = None
-
-
-def _embed_local(texts, batch_size=8):
-    global _st_model
-    from sentence_transformers import SentenceTransformer
-    if _st_model is None:
-        _st_model = SentenceTransformer(LOCAL_MODEL)
-    vecs = _st_model.encode(texts, batch_size=batch_size,
-                            normalize_embeddings=True, show_progress_bar=False)
-    return [v.tolist() for v in vecs]
+_client = None
+_model = None
 
 
-def _embed_server(texts):
-    url = config.EMBED_BASE_URL.rstrip("/") + config.EMBED_ENDPOINT
-    req = urllib.request.Request(
-        url,
-        data=json.dumps({"texts": texts}).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=config.EMBED_TIMEOUT) as r:
-        payload = json.loads(r.read())
-    for key in ("dense", "embeddings", "dense_vecs"):
-        if key in payload:
-            return payload[key]
-    raise RuntimeError(f"임베딩 응답에서 벡터를 찾지 못했습니다: {list(payload)}")
+def get_client(backend=None):
+    """백엔드에 맞는 OpenAI 클라이언트를 만든다 (한 번만).
 
-
-def _embed_openai(texts):
-    from openai import OpenAI
-    client = OpenAI()
-    r = client.embeddings.create(model=OPENAI_MODEL, input=texts)
-    return [d.embedding for d in r.data]
+    자체 서버는 인증을 요구하지 않지만 SDK가 키를 요구하므로
+    아무 문자열이나 넣어 준다.
+    """
+    global _client, _model
+    b = backend or BACKEND
+    if _client is None:
+        from openai import OpenAI
+        if b == "server":
+            _client = OpenAI(
+                base_url=config.EMBED_BASE_URL.rstrip("/") + "/v1",
+                api_key=os.environ.get("EMBED_SERVER_API_KEY", "not-needed"),
+                timeout=config.EMBED_TIMEOUT,
+            )
+            _model = SERVER_MODEL
+        elif b == "openai":
+            _client = OpenAI(timeout=config.EMBED_TIMEOUT)   # OPENAI_API_KEY 사용
+            _model = OPENAI_MODEL
+        else:
+            raise ValueError(f"알 수 없는 백엔드: {b} (openai | server)")
+    return _client, _model
 
 
 def embed(texts, backend=None):
-    """문자열 목록 -> 벡터 목록."""
+    """문자열 목록 -> 벡터 목록. 백엔드가 달라도 결과 형태는 같다."""
     if isinstance(texts, str):
         texts = [texts]
-    b = backend or BACKEND
-    if b == "local":
-        return _embed_local(texts)
-    if b == "server":
-        return _embed_server(texts)
-    if b == "openai":
-        return _embed_openai(texts)
-    raise ValueError(f"알 수 없는 백엔드: {b}")
+    client, model = get_client(backend)
+    r = client.embeddings.create(model=model, input=texts)
+    # data 순서가 보장되지만 index로 한 번 더 정렬해 안전하게 만든다
+    return [d.embedding for d in sorted(r.data, key=lambda d: d.index)]
 
 
 def embed_batched(texts, batch=32, backend=None, progress=True):
@@ -87,11 +75,29 @@ def embed_batched(texts, batch=32, backend=None, progress=True):
 
 
 if __name__ == "__main__":
-    v = embed(["생성형 AI 시장이 급성장하고 있다", "인공지능 투자가 늘고 있다"])
-    print(f"백엔드: {BACKEND}  개수: {len(v)}  차원: {len(v[0])}")
     import math
-    a, b = v[0], v[1]
+    import time
+
+    pairs = ["생성형 AI 시장이 급성장하고 있다", "인공지능 투자가 늘고 있다"]
+
+    t0 = time.perf_counter()
+    v = embed(pairs)
+    first = (time.perf_counter() - t0) * 1000
+    t0 = time.perf_counter()
+    embed(pairs)
+    warm = (time.perf_counter() - t0) * 1000
+
+    a, b = v
     dot = sum(x * y for x, y in zip(a, b))
     na = math.sqrt(sum(x * x for x in a))
     nb = math.sqrt(sum(x * x for x in b))
+
+    print(f"백엔드   : {BACKEND}")
+    print(f"차원     : {len(a)}  (설정값 EMBED_DIM={config.EMBED_DIM})")
+    print(f"벡터 노름: {na:.6f}  (1.0이면 정규화된 벡터)")
+    print(f"소요     : 첫 호출 {first:.0f} ms / 두 번째 {warm:.0f} ms")
     print(f"두 문장 코사인 유사도: {dot / (na * nb):.4f}")
+
+    if len(a) != config.EMBED_DIM:
+        print(f"\n[주의] 실제 차원({len(a)})과 EMBED_DIM({config.EMBED_DIM})이 다릅니다. "
+              f".env를 맞춰 주세요.")

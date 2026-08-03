@@ -33,9 +33,9 @@ def get(key, default=None):
     return os.environ.get(key, default)
 
 
-# 임베딩
-EMBED_BASE_URL = get("EMBED_BASE_URL", "http://localhost:8000")
-EMBED_ENDPOINT = get("EMBED_ENDPOINT", "/embed")
+# 임베딩 — openai | server 두 가지. 둘 다 OpenAI 규격(/v1/embeddings)을 쓴다.
+EMBED_BACKEND = get("EMBED_BACKEND", "server")
+EMBED_BASE_URL = get("EMBED_BASE_URL", "http://localhost:8000")   # server 백엔드용
 EMBED_DIM = int(get("EMBED_DIM", "1024"))
 EMBED_TIMEOUT = int(get("EMBED_TIMEOUT", "60"))
 

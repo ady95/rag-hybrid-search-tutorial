@@ -1,0 +1,83 @@
+# 예제 코드 — RAG 하이브리드 검색 시스템 구축 따라하기
+
+위키독스 책 「RAG 하이브리드 검색 시스템 구축 따라하기 (SQLite부터 PostgreSQL까지)」의 예제 코드입니다.
+각 모듈은 책의 특정 장에 대응하며, 순서대로 실행하면 검색 시스템이 완성됩니다.
+
+## 모듈 구성
+
+| 파일 | 역할 | 관련 장 |
+|------|------|---------|
+| `config.py` | `.env` 로딩과 공통 상수 | 02, 07-2 |
+| `pdf_to_md.py` | PDF → 마크다운 변환 (pdfplumber, 폰트 크기로 헤딩 추정) | 03-2 |
+| `chunker.py` | 헤딩 경계 기반 청킹 | 03-3 |
+| `tokenizer_ko.py` | Kiwi 형태소 토큰화, FTS5/tsquery 변환 | 02-3, 04-2 |
+| `embedder.py` | 임베딩 생성 (local / server / openai 3종 백엔드) | 02-4, 05-1 |
+| `build_sqlite.py` | SQLite 색인 (FTS5 + trigram + sqlite-vec) | 04-3, 05-3 |
+| `search_sqlite.py` | SQLite 하이브리드 검색 + RRF 융합 | 04, 05, 06 |
+| `compare_modes.py` | 네 가지 검색 모드 비교 도구 | 06-4 |
+| `build_pg.py` | PostgreSQL 색인 (tsvector + pgvector + pg_bigm) | 07-3 |
+| `search_pg.py` | PostgreSQL 검색, RRF를 SQL 한 번에 | 07-4 |
+| `evaluate.py` | Recall@k / Hit@k / MRR 측정 | 08-1, 08-2 |
+| `bench.py` | SQLite vs PostgreSQL 비교 벤치마크 | 07-5, 08-3 |
+| `bench_scale.py` | 규모를 키웠을 때의 성능 관찰 | 08-3 |
+
+## 실행 순서
+
+```bash
+# 0) 준비
+pip install -r requirements.txt
+cp .env.example .env          # 값 채우기
+
+# 1) 샘플 PDF를 data/pdf/ 에 넣고 마크다운으로 변환
+python -m src.pdf_to_md
+
+# 2) 청킹
+python -m src.chunker
+
+# 3) SQLite 색인 (임베딩 생성 포함)
+python -m src.build_sqlite
+
+# 4) 검색해 보기
+python -m src.search_sqlite "AI 규제 법안이 통과된 나라"
+python -m src.search_sqlite "AI 규제" --mode keyword --ym 2026-03
+
+# 5) 네 가지 모드 비교
+python -m src.compare_modes
+
+# 6) 품질 평가
+python -m src.evaluate --make-auto 30
+python -m src.evaluate
+
+# 7) PostgreSQL로 확장 (docker/postgres 에서 컨테이너 먼저 기동)
+python -m src.build_pg
+python -m src.search_pg "AI 규제 법안이 통과된 나라"
+
+# 8) 두 DB 비교
+python -m src.bench
+```
+
+## 임베딩 백엔드 고르기
+
+`EMBED_BACKEND` 환경변수로 선택합니다. **둘 다 OpenAI 규격(`/v1/embeddings`)** 이라
+바뀌는 것은 `base_url` 하나뿐이고 이후 코드는 동일합니다.
+
+| 값 | 방식 | 모델 | 차원 | 비고 |
+|----|------|------|------|------|
+| `server` (기본) | 자체 임베딩 서버 | BAAI/bge-m3 | 1024 | `deploy/embed_openai_server.py` 로 기동 |
+| `openai` | OpenAI 임베딩 API | text-embedding-3-small | 1536 | `OPENAI_API_KEY` 필요 |
+
+백엔드를 바꾸면 차원이 달라지므로 `EMBED_DIM` 도 함께 바꾸고 **재색인**해야 합니다.
+
+자체 서버 기동:
+
+```bash
+pip install fastapi uvicorn FlagEmbedding
+uvicorn deploy.embed_openai_server:app --host 0.0.0.0 --port 8000
+curl http://localhost:8000/health
+```
+
+## 주의
+
+- **색인과 질의는 반드시 같은 토크나이저를 통과해야 합니다.** `tokenizer_ko.tokenize()` 를 양쪽에서 쓰세요. 어긋나면 검색이 조용히 0건이 됩니다
+- 벤치마크 전에는 예열이 필요합니다. Kiwi 사전 적재에 약 2초가 걸립니다
+- `.env` 는 커밋하지 마세요
