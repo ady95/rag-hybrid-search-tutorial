@@ -1,0 +1,25 @@
+# RAG 하이브리드 검색 시스템 구축 따라하기 — 실습 의존성
+# 설치: pip install -r requirements.txt
+# 검증 환경: Python 3.10.18 / Windows 11 (macOS·Linux도 동일하게 동작)
+
+# 문서 파싱
+pdfplumber==0.11.9          # PDF 텍스트 추출 (한국어 읽기 순서가 정확)
+pymupdf==1.26.5             # 비교용 (03-2에서 pdfplumber와 대조)
+
+# 한국어 형태소 분석
+kiwipiepy==0.20.1           # pip 단일 설치, Windows에서 별도 DLL 불필요
+
+# SQLite 벡터 확장
+sqlite-vec==0.1.6
+
+# 임베딩 (둘 중 하나만 있어도 됨)
+sentence-transformers==5.4.1   # 로컬 모델(BAAI/bge-m3) 사용 시
+openai==1.109.1                # OpenAI 임베딩 API 사용 시
+
+# PostgreSQL
+psycopg[binary,pool]==3.2.3
+
+# 공통
+numpy==1.26.4
+requests==2.32.5
+tiktoken==0.5.1             # 토큰 수 계산 (09장)

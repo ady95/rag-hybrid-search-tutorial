@@ -1,0 +1,29 @@
+# 비밀정보
+.env
+.env.local
+*.pem
+*.key
+
+# 샘플 데이터와 파생물 (fetch_spri / pdf_to_md / chunker 로 재생성)
+data/pdf/
+data/md/
+data/*.db
+data/chunks.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# 편집기 / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 도구 부산물
+.playwright-cli/
+*.log

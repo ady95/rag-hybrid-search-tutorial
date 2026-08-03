@@ -1,0 +1,445 @@
+[
+  {
+    "id": "auto-01",
+    "query": "앤트로픽 연구진, Claude Sonnet 4.5 모델 내부의 감정 벡터 확인 3",
+    "gold": [
+      "SPRi_AI_Brief_202605#0049"
+    ],
+    "kind": "auto",
+    "year_month": "2026-05"
+  },
+  {
+    "id": "auto-02",
+    "query": "£ 데이터·컴퓨팅·사람과 문화 3대 축을 중심으로 AI 기반 과학 연구 역량 강화 추진",
+    "gold": [
+      "SPRi_AI_Brief_202601#0010"
+    ],
+    "kind": "auto",
+    "year_month": "2026-01"
+  },
+  {
+    "id": "auto-03",
+    "query": "S&P500 기업 AI 채용 공고의 71%가 시니어급에 집중",
+    "gold": [
+      "SPRi_AI_Brief_202607#0055"
+    ],
+    "kind": "auto",
+    "year_month": "2026-07"
+  },
+  {
+    "id": "auto-04",
+    "query": "생산성 향상을 위한 경영진의 AI 사용 의무화에 ‘워크슬롭’ 현상 확산 3",
+    "gold": [
+      "SPRi_AI_Brief_202605#0064"
+    ],
+    "kind": "auto",
+    "year_month": "2026-05"
+  },
+  {
+    "id": "auto-05",
+    "query": "한국, 글로벌 AI 경쟁에서 기술 역량은 상위권, AI 도입 상승폭도 1위 기록",
+    "gold": [
+      "SPRi_AI_Brief_202605#0053"
+    ],
+    "kind": "auto",
+    "year_month": "2026-05"
+  },
+  {
+    "id": "auto-06",
+    "query": "ChatGPT의 ‘너드’ 성격 시스템 프롬프트와 보상 모델 결합으로 고블린 언급 급증 3",
+    "gold": [
+      "SPRi_AI_Brief_202606#0048"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-07",
+    "query": "일부 사무직 종사자들, AI로 자동화될 가능성 낮은 직종으로 전환 모색",
+    "gold": [
+      "SPRi_AI_Brief_202603#0060"
+    ],
+    "kind": "auto",
+    "year_month": "2026-03"
+  },
+  {
+    "id": "auto-08",
+    "query": "£ 호주 국가 AI 계획, AI 기회 포착과 혜택 확산, 안전 확보의 3대 목표 설정",
+    "gold": [
+      "SPRi_AI_Brief_202601#0015"
+    ],
+    "kind": "auto",
+    "year_month": "2026-01"
+  },
+  {
+    "id": "auto-09",
+    "query": "근로자의 판단력 함양을 위해서는 인간의 참여 보장을 넘어 업무 방식의 재설계 필요",
+    "gold": [
+      "SPRi_AI_Brief_202603#0058"
+    ],
+    "kind": "auto",
+    "year_month": "2026-03"
+  },
+  {
+    "id": "auto-10",
+    "query": "신규 역량은 임금과 고용에 긍정적이나 AI 역량은 고용효과가 상대적으로 제한",
+    "gold": [
+      "SPRi_AI_Brief_202602#0068"
+    ],
+    "kind": "auto",
+    "year_month": "2026-02"
+  },
+  {
+    "id": "auto-11",
+    "query": "향후 5년간 2,000억 달러의 추가 경제성장과 25만 개 AI 일자리 창출 목표 3",
+    "gold": [
+      "SPRi_AI_Brief_202607#0018"
+    ],
+    "kind": "auto",
+    "year_month": "2026-07"
+  },
+  {
+    "id": "auto-12",
+    "query": "AI 조달 기준 강화 및 연방정부와 독립된 조달 기반 마련",
+    "gold": [
+      "SPRi_AI_Brief_202605#0014"
+    ],
+    "kind": "auto",
+    "year_month": "2026-05"
+  },
+  {
+    "id": "auto-13",
+    "query": "AI 사용 그룹, 과제 이해도 평가에서 AI 비사용 그룹보다 17%p 낮은 점수 기록",
+    "gold": [
+      "SPRi_AI_Brief_202603#0047"
+    ],
+    "kind": "auto",
+    "year_month": "2026-03"
+  },
+  {
+    "id": "auto-14",
+    "query": "Claude Opus 4.6, 에이전트 코딩과 추론 등 주요 벤치마크에서 최고점 달성",
+    "gold": [
+      "SPRi_AI_Brief_202603#0035"
+    ],
+    "kind": "auto",
+    "year_month": "2026-03"
+  },
+  {
+    "id": "auto-15",
+    "query": "첨단 AI 모델 개발에서 한국은 미국과 중국에 이어 세계 3위 AI 강국으로 평가 3",
+    "gold": [
+      "SPRi_AI_Brief_202602#0060"
+    ],
+    "kind": "auto",
+    "year_month": "2026-02"
+  },
+  {
+    "id": "auto-16",
+    "query": "£ 기술과 코딩 중심의 AI 도입은 빙산의 일각으로, 사무직 전반의 AI 노출도는 11.7% 기록",
+    "gold": [
+      "SPRi_AI_Brief_202601#0073"
+    ],
+    "kind": "auto",
+    "year_month": "2026-01"
+  },
+  {
+    "id": "auto-17",
+    "query": "중국 국가발전개혁위원회, 메타의 마누스 인수 금지 발표 3",
+    "gold": [
+      "SPRi_AI_Brief_202606#0012"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-18",
+    "query": "오크리지 국립연구소, 제네시스 미션에 따라 차세대 데이터센터 연구소 출범 3",
+    "gold": [
+      "SPRi_AI_Brief_202604#0016"
+    ],
+    "kind": "auto",
+    "year_month": "2026-04"
+  },
+  {
+    "id": "auto-19",
+    "query": "클로드 사용자들, AI의 신뢰성 부족과 일자리 상실을 가장 우려",
+    "gold": [
+      "SPRi_AI_Brief_202604#0050"
+    ],
+    "kind": "auto",
+    "year_month": "2026-04"
+  },
+  {
+    "id": "auto-20",
+    "query": "AI 플러스 전략의 확대 시행으로 디지털 및 지능화 발전 수준 향상 추진",
+    "gold": [
+      "SPRi_AI_Brief_202604#0011"
+    ],
+    "kind": "auto",
+    "year_month": "2026-04"
+  },
+  {
+    "id": "auto-21",
+    "query": "국방부, 8개 AI 기업과 기밀 네트워크 배치 협약으로 AI 가속화 전략 확대 3",
+    "gold": [
+      "SPRi_AI_Brief_202606#0019"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-22",
+    "query": "£ 금융기업들, 비판적 사고 능력 갖춘 인재 선발을 위해 구직자의 AI 사용 금지",
+    "gold": [
+      "SPRi_AI_Brief_202601#0070"
+    ],
+    "kind": "auto",
+    "year_month": "2026-01"
+  },
+  {
+    "id": "auto-23",
+    "query": "미국과 중국의 지정학적 갈등 국면에서 중국의 AI 산업 통제 확대 신호",
+    "gold": [
+      "SPRi_AI_Brief_202606#0013"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-24",
+    "query": "CES 2026, 휴머노이드 로봇과 자율주행 차량 등 피지컬 AI가 주요 테마로 부상",
+    "gold": [
+      "SPRi_AI_Brief_202602#0041"
+    ],
+    "kind": "auto",
+    "year_month": "2026-02"
+  },
+  {
+    "id": "auto-25",
+    "query": "지식노동에서 AI의 균등화 효과는 명확히 정의된 객관적 업무 위주로 형성",
+    "gold": [
+      "SPRi_AI_Brief_202607#0038"
+    ],
+    "kind": "auto",
+    "year_month": "2026-07"
+  },
+  {
+    "id": "auto-26",
+    "query": "월드 모델, 환경과 상황을 학습해 미래 상태를 추론함으로써 LLM과 차별화 3",
+    "gold": [
+      "SPRi_AI_Brief_202602#0049"
+    ],
+    "kind": "auto",
+    "year_month": "2026-02"
+  },
+  {
+    "id": "auto-27",
+    "query": "스페이스X가 보유한 콜로서스 1 데이터센터의 컴퓨팅 용량 전체 확보",
+    "gold": [
+      "SPRi_AI_Brief_202606#0034"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-28",
+    "query": "알리바바·문샷 AI·지푸 AI·미니맥스의 AI 모델, 폐쇄형 프런티어 모델 성능에 근접 3",
+    "gold": [
+      "SPRi_AI_Brief_202603#0030"
+    ],
+    "kind": "auto",
+    "year_month": "2026-03"
+  },
+  {
+    "id": "auto-29",
+    "query": "메타 직원들의 조직적 반발과 함께 노동법적 쟁점 부상",
+    "gold": [
+      "SPRi_AI_Brief_202606#0032"
+    ],
+    "kind": "auto",
+    "year_month": "2026-06"
+  },
+  {
+    "id": "auto-30",
+    "query": "Gemini 3.1 Flash-Lite, 추론과 멀티모달 벤치마크에서 동급 경쟁 모델 능가",
+    "gold": [
+      "SPRi_AI_Brief_202604#0036"
+    ],
+    "kind": "auto",
+    "year_month": "2026-04"
+  },
+  {
+    "id": "man-01",
+    "query": "미국 정부의 AI 관련 행정명령에는 어떤 내용이 있나",
+    "gold": [
+      "SPRi_AI_Brief_202601#0004",
+      "SPRi_AI_Brief_202601#0016",
+      "SPRi_AI_Brief_202601#0017",
+      "SPRi_AI_Brief_202601#0018",
+      "SPRi_AI_Brief_202601#0019",
+      "SPRi_AI_Brief_202606#0024",
+      "SPRi_AI_Brief_202606#0025",
+      "SPRi_AI_Brief_202606#0026",
+      "SPRi_AI_Brief_202607#0021"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-02",
+    "query": "한국이 개발한 대규모 언어 모델은 무엇이 있나",
+    "gold": [
+      "SPRi_AI_Brief_202602#0011",
+      "SPRi_AI_Brief_202602#0059",
+      "SPRi_AI_Brief_202602#0060",
+      "SPRi_AI_Brief_202604#0008",
+      "SPRi_AI_Brief_202605#0009",
+      "SPRi_AI_Brief_202605#0035",
+      "SPRi_AI_Brief_202607#0010"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-03",
+    "query": "AI 때문에 일자리가 줄어들고 있다는 근거가 있나",
+    "gold": [
+      "SPRi_AI_Brief_202601#0072",
+      "SPRi_AI_Brief_202601#0074",
+      "SPRi_AI_Brief_202601#0075",
+      "SPRi_AI_Brief_202606#0065",
+      "SPRi_AI_Brief_202607#0053",
+      "SPRi_AI_Brief_202607#0055"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-04",
+    "query": "중국 AI 기업들의 최근 움직임",
+    "gold": [
+      "SPRi_AI_Brief_202602#0055",
+      "SPRi_AI_Brief_202602#0056",
+      "SPRi_AI_Brief_202603#0029",
+      "SPRi_AI_Brief_202603#0031",
+      "SPRi_AI_Brief_202604#0041",
+      "SPRi_AI_Brief_202606#0013"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-05",
+    "query": "AI 반도체와 컴퓨팅 인프라 투자 규모",
+    "gold": [
+      "SPRi_AI_Brief_202603#0025",
+      "SPRi_AI_Brief_202605#0037",
+      "SPRi_AI_Brief_202605#0038",
+      "SPRi_AI_Brief_202606#0016",
+      "SPRi_AI_Brief_202606#0034"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-06",
+    "query": "AI 안전성과 정렬 문제 연구",
+    "gold": [
+      "SPRi_AI_Brief_202601#0053",
+      "SPRi_AI_Brief_202601#0054",
+      "SPRi_AI_Brief_202601#0055",
+      "SPRi_AI_Brief_202603#0017",
+      "SPRi_AI_Brief_202606#0050",
+      "SPRi_AI_Brief_202606#0051"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-07",
+    "query": "기업들이 AI를 도입해서 실제로 생산성이 올랐나",
+    "gold": [
+      "SPRi_AI_Brief_202601#0074",
+      "SPRi_AI_Brief_202601#0075",
+      "SPRi_AI_Brief_202601#0076",
+      "SPRi_AI_Brief_202601#0077",
+      "SPRi_AI_Brief_202604#0062",
+      "SPRi_AI_Brief_202604#0063",
+      "SPRi_AI_Brief_202604#0064",
+      "SPRi_AI_Brief_202605#0012",
+      "SPRi_AI_Brief_202605#0063",
+      "SPRi_AI_Brief_202605#0064"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-08",
+    "query": "영상 생성 AI 모델 경쟁 현황",
+    "gold": [
+      "SPRi_AI_Brief_202601#0035",
+      "SPRi_AI_Brief_202601#0036",
+      "SPRi_AI_Brief_202601#0037",
+      "SPRi_AI_Brief_202602#0010",
+      "SPRi_AI_Brief_202603#0007",
+      "SPRi_AI_Brief_202604#0007",
+      "SPRi_AI_Brief_202605#0008",
+      "SPRi_AI_Brief_202606#0009",
+      "SPRi_AI_Brief_202607#0009"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-09",
+    "query": "AI 규제 법안이 통과된 나라",
+    "gold": [
+      "SPRi_AI_Brief_202602#0013",
+      "SPRi_AI_Brief_202602#0014",
+      "SPRi_AI_Brief_202602#0017",
+      "SPRi_AI_Brief_202602#0023",
+      "SPRi_AI_Brief_202602#0024",
+      "SPRi_AI_Brief_202603#0012",
+      "SPRi_AI_Brief_202603#0013",
+      "SPRi_AI_Brief_202603#0015",
+      "SPRi_AI_Brief_202607#0011",
+      "SPRi_AI_Brief_202607#0012",
+      "SPRi_AI_Brief_202607#0013"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-10",
+    "query": "AI 에이전트 기술의 발전 방향",
+    "gold": [
+      "SPRi_AI_Brief_202601#0051",
+      "SPRi_AI_Brief_202601#0052",
+      "SPRi_AI_Brief_202602#0033",
+      "SPRi_AI_Brief_202603#0044",
+      "SPRi_AI_Brief_202603#0045",
+      "SPRi_AI_Brief_202604#0012",
+      "SPRi_AI_Brief_202604#0014"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-11",
+    "query": "의료 분야 AI 활용 사례",
+    "gold": [
+      "SPRi_AI_Brief_202602#0034",
+      "SPRi_AI_Brief_202603#0020",
+      "SPRi_AI_Brief_202603#0021",
+      "SPRi_AI_Brief_202603#0022",
+      "SPRi_AI_Brief_202607#0019",
+      "SPRi_AI_Brief_202607#0041"
+    ],
+    "kind": "manual"
+  },
+  {
+    "id": "man-12",
+    "query": "AI 교육과 인재 양성 정책",
+    "gold": [
+      "SPRi_AI_Brief_202602#0069",
+      "SPRi_AI_Brief_202605#0016",
+      "SPRi_AI_Brief_202605#0017",
+      "SPRi_AI_Brief_202605#0018",
+      "SPRi_AI_Brief_202605#0059",
+      "SPRi_AI_Brief_202605#0060",
+      "SPRi_AI_Brief_202607#0062"
+    ],
+    "kind": "manual"
+  }
+]
