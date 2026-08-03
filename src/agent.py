@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import date
 
 from src import embedder, tokenizer_ko
 from src.build_sqlite import connect
@@ -25,7 +26,16 @@ MODEL = os.environ.get("RAG_MODEL", "claude-sonnet-5")
 MAX_TURNS = 6
 ALLOWED_MODES = {"hybrid", "keyword", "semantic"}
 
-SYSTEM = """당신은 SPRi AI 브리프를 근거로 답하는 조사 도우미입니다.
+# 09-4: 모델은 오늘이 며칠인지 모른다. "지난달"·"상반기"를 계산하려면
+# 오늘 날짜와 자료 범위를 알려 줘야 한다.
+CORPUS_RANGE = ("2026-01", "2026-07")
+
+SYSTEM = f"""오늘은 {date.today():%Y-%m-%d} 입니다.
+자료는 SPRi AI 브리프 {CORPUS_RANGE[0]} ~ {CORPUS_RANGE[1]} 호입니다.
+상대적 날짜 표현(지난달, 최근, 상반기)은 오늘 날짜를 기준으로 계산하되,
+자료 범위를 벗어나면 범위 밖이라고 알려 주세요.
+
+당신은 SPRi AI 브리프를 근거로 답하는 조사 도우미입니다.
 
 인용 규칙
 - 사실을 서술하는 모든 문장 끝에 근거 자료의 대괄호 식별자를 붙입니다.
@@ -47,7 +57,7 @@ SEARCH_TOOL = {
         "SPRi AI 브리프 2026년 1~7월호에서 관련 문단을 찾는다. "
         "사실·수치·기관명·날짜가 필요한 질문에는 반드시 먼저 이 도구를 부른다. "
         "질문 문장을 그대로 넣지 말고 핵심 키워드 위주로 다시 쓴다. "
-        "특정 월에 한정된 질문이면 year_month 를 채운다."
+        "특정 월에 한정된 질문이면 year_months 를 채운다."
     ),
     "input_schema": {
         "type": "object",
@@ -56,9 +66,13 @@ SEARCH_TOOL = {
                 "type": "string",
                 "description": "검색어. 예: 'AI 규제 법안 캘리포니아'",
             },
-            "year_month": {
-                "type": "string",
-                "description": "특정 호로 좁힐 때만. 형식 2026-03. 전체 검색이면 생략",
+            "year_months": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": ("특정 호로 좁힐 때만. 형식 2026-03. 여러 달이면 "
+                                "나열한다. '상반기'는 2026-01 ~ 2026-06 으로 "
+                                "펼쳐서 넣는다. 달을 특정할 수 없으면 생략한다 "
+                                "— 비워 두는 편이 낫다."),
             },
             "mode": {
                 "type": "string",
@@ -66,6 +80,10 @@ SEARCH_TOOL = {
                 "description": "기본은 hybrid. 고유명사가 정확히 기억날 때만 keyword",
             },
             "top_n": {"type": "integer", "description": "기본 8, 최대 20"},
+            "exclude_toc": {
+                "type": "boolean",
+                "description": "기본 true. 목차·표지 구간을 검색에서 뺀다",
+            },
         },
         "required": ["query"],
     },
@@ -99,9 +117,16 @@ def run_tool_with_ids(conn, name, args, budget=2500, count_tokens=count_tokens):
     if mode not in ALLOWED_MODES:
         mode = "hybrid"
     top_n = min(int(args.get("top_n") or 8), 20)
-    ym = args.get("year_month") or None
+    ym = args.get("year_months") or args.get("year_month") or None
+    no_toc = args.get("exclude_toc", True)
 
-    res = search(conn, query, mode=mode, ym=ym, top_n=top_n)
+    res = search(conn, query, mode=mode, ym=ym, top_n=top_n, no_toc=no_toc)
+    if not res and ym:
+        # 필터가 정답을 통째로 날렸을 수 있다. 한 번은 풀고 다시 찾는다 (09-4).
+        res = search(conn, query, mode=mode, top_n=top_n, no_toc=no_toc)
+        if res:
+            shown = ",".join(ym) if isinstance(ym, list) else ym
+            print(f"  [필터 해제] {shown} 에는 없어 전체에서 다시 찾았습니다")
     if not res:
         return f"'{query}' 로 찾은 결과가 없습니다. 다른 검색어로 다시 시도하세요.", []
 
@@ -119,6 +144,18 @@ def run_tool_with_ids(conn, name, args, budget=2500, count_tokens=count_tokens):
         ids.append(cid)
         used += n
     return "\n---\n".join(out), ids
+
+
+def compare(conn, question, months, per=5):
+    """축마다 따로 담는다. RRF로 섞으면 어느 달 것인지 사라져 비교를 못 한다 (09-4)."""
+    out = []
+    for ym in months:
+        res = search(conn, question, mode="hybrid", ym=ym, top_n=per, no_toc=True)
+        meta = fetch(conn, [c for c, _, _ in res])
+        body = "\n---\n".join(BLOCK.format(**meta[c])
+                              for c, _, _ in res if c in meta)
+        out.append(f'<자료 기간="{ym}">\n{body}\n</자료>')
+    return "\n\n".join(out)
 
 
 def ask(conn, question):

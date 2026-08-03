@@ -20,17 +20,31 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 
-def _ym_filter(ym, alias="c"):
-    return (f" AND {alias}.year_month = ? ", [ym]) if ym else ("", [])
+def _ym_filter(ym, alias="c", no_toc=False):
+    """메타데이터 조건절을 만든다 (09-4).
+
+    ym 은 문자열 하나도 되고 목록도 된다 — "상반기" 같은 요청을 받으려면
+    목록이 필요하다. no_toc 는 파생 메타데이터(src/meta.py)로 표시해 둔
+    목차 구간을 뺀다. 열이 없는 옛 색인에서는 조용히 무시한다.
+    """
+    sql, params = "", []
+    if ym:
+        if isinstance(ym, str):
+            ym = [ym]
+        sql += f" AND {alias}.year_month IN ({','.join('?' * len(ym))}) "
+        params += list(ym)
+    if no_toc:
+        sql += f" AND COALESCE({alias}.is_toc, 0) = 0 "
+    return sql, params
 
 
-def search_keyword(conn, query, k=None, ym=None):
+def search_keyword(conn, query, k=None, ym=None, no_toc=False):
     """FTS5 + BM25. 질의도 색인과 같은 Kiwi 토크나이저를 통과시킨다."""
     k = k or config.TOPK_PER_MODE
     match = tokenizer_ko.to_fts_query(query, op="OR")
     if not match:
         return []
-    where, params = _ym_filter(ym)
+    where, params = _ym_filter(ym, no_toc=no_toc)
     sql = f"""
         SELECT c.id, c.chunk_id, bm25(chunks_fts, 3.0, 1.0) AS score
         FROM chunks_fts f
@@ -44,13 +58,13 @@ def search_keyword(conn, query, k=None, ym=None):
     return [(r["chunk_id"], -r["score"]) for r in rows]
 
 
-def search_semantic(conn, query, k=None, ym=None, backend=None):
+def search_semantic(conn, query, k=None, ym=None, backend=None, no_toc=False):
     """sqlite-vec KNN. 거리(작을수록 좋음)를 유사도로 뒤집어 돌려준다."""
     k = k or config.TOPK_PER_MODE
     qv = embed([query], backend=backend)[0]
     # 필터가 있으면 후보를 넉넉히 뽑아 파이썬에서 거른다
     # (sqlite-vec은 KNN에 조건을 함께 걸 수 없다)
-    fetch = k * 8 if ym else k
+    fetch = k * 8 if (ym or no_toc) else k
     rows = conn.execute("""
         SELECT v.rowid AS id, distance
         FROM chunks_vec v
@@ -60,10 +74,10 @@ def search_semantic(conn, query, k=None, ym=None, backend=None):
     if not rows:
         return []
     id_list = [r["id"] for r in rows]
-    where, params = _ym_filter(ym)
+    where, params = _ym_filter(ym, no_toc=no_toc)
     q = f"SELECT id, chunk_id FROM chunks WHERE id IN ({','.join('?' * len(id_list))})"
     meta = {r["id"]: r["chunk_id"] for r in conn.execute(q, id_list)}
-    if ym:
+    if where:
         ok = {r["id"] for r in conn.execute(
             f"SELECT id FROM chunks c WHERE c.id IN ({','.join('?' * len(id_list))}){where}",
             id_list + params)}
@@ -71,7 +85,7 @@ def search_semantic(conn, query, k=None, ym=None, backend=None):
     return [(meta[r["id"]], -r["distance"]) for r in rows[:k] if r["id"] in meta]
 
 
-def search_fallback(conn, query, k=None, ym=None):
+def search_fallback(conn, query, k=None, ym=None, no_toc=False):
     """trigram 폴백. 형태소가 실패하는 질의(신조어·오타·영문 혼합)를 건진다.
 
     trigram은 부분 문자열 검색이므로 질의 전체를 한 구(phrase)로 넣으면
@@ -86,7 +100,7 @@ def search_fallback(conn, query, k=None, ym=None):
     if not words:
         return []
 
-    where, params = _ym_filter(ym)
+    where, params = _ym_filter(ym, no_toc=no_toc)
     sql = f"""
         SELECT c.chunk_id, bm25(chunks_tri) AS score
         FROM chunks_tri t
@@ -127,22 +141,25 @@ def rrf_fuse(ranked_lists, k=None, weights=None, top_n=None):
     return [(cid, sc, hits[cid]) for cid, sc in out]
 
 
-def search(conn, query, mode="hybrid", ym=None, top_n=None, backend=None):
+def search(conn, query, mode="hybrid", ym=None, top_n=None, backend=None,
+           no_toc=False):
+    """ym 은 "2026-03" 도 되고 ["2026-01", "2026-02"] 도 된다 (09-4)."""
     top_n = top_n or config.TOP_N
     if mode == "keyword":
-        res = search_keyword(conn, query, ym=ym)
+        res = search_keyword(conn, query, ym=ym, no_toc=no_toc)
         return [(cid, sc, ["keyword"]) for cid, sc in res[:top_n]]
     if mode == "semantic":
-        res = search_semantic(conn, query, ym=ym, backend=backend)
+        res = search_semantic(conn, query, ym=ym, backend=backend, no_toc=no_toc)
         return [(cid, sc, ["semantic"]) for cid, sc in res[:top_n]]
     if mode == "fallback":
-        res = search_fallback(conn, query, ym=ym)
+        res = search_fallback(conn, query, ym=ym, no_toc=no_toc)
         return [(cid, sc, ["fallback"]) for cid, sc in res[:top_n]]
 
     lists = [
-        ("keyword", search_keyword(conn, query, ym=ym)),
-        ("semantic", search_semantic(conn, query, ym=ym, backend=backend)),
-        ("fallback", search_fallback(conn, query, ym=ym)),
+        ("keyword", search_keyword(conn, query, ym=ym, no_toc=no_toc)),
+        ("semantic", search_semantic(conn, query, ym=ym, backend=backend,
+                                     no_toc=no_toc)),
+        ("fallback", search_fallback(conn, query, ym=ym, no_toc=no_toc)),
     ]
     return rrf_fuse(lists, weights={
         "keyword": config.W_KEYWORD,

@@ -19,6 +19,7 @@
 | `context.py` | 검색 결과를 토큰 예산에 맞춰 컨텍스트로 조립 | 09-1 |
 | `verify.py` | 인용 검증 — 실제로 준 자료만 인용했는지 | 09-3 |
 | `agent.py` | 검색을 도구로 노출한 에이전트 루프 | 09-2, 09-4 |
+| `meta.py` | 파생 메타데이터 — 목차 구간 표시 | 09-4 |
 | `report.py` | 프로젝트 1 — 월간 동향 리포트 생성기 | 10-1 |
 | `bot.py` | 프로젝트 2 — 출처를 밝히는 질의응답 봇 | 10-2 |
 | `build_pg.py` | PostgreSQL 색인 (tsvector + pgvector + pg_bigm) | 07-3 |
@@ -69,6 +70,9 @@ python -m src.search_pg "AI 규제 법안이 통과된 나라"
 
 # 8) 두 DB 비교
 python -m src.bench
+
+# 8-1) 파생 메타데이터 채우기 (09-4). chunks.is_toc 를 만든다
+python -m src.meta
 
 # 9) LLM 없이 확인되는 부분 (API 키 불필요)
 python -m src.verify                       # 인용 검증 4종 판정
