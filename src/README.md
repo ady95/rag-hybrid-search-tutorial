@@ -16,6 +16,11 @@
 | `build_sqlite.py` | SQLite 색인 (FTS5 + trigram + sqlite-vec) | 04-3, 05-3 |
 | `search_sqlite.py` | SQLite 하이브리드 검색 + RRF 융합 | 04, 05, 06 |
 | `compare_modes.py` | 네 가지 검색 모드 비교 도구 | 06-4 |
+| `context.py` | 검색 결과를 토큰 예산에 맞춰 컨텍스트로 조립 | 09-1 |
+| `verify.py` | 인용 검증 — 실제로 준 자료만 인용했는지 | 09-3 |
+| `agent.py` | 검색을 도구로 노출한 에이전트 루프 | 09-2, 09-4 |
+| `report.py` | 프로젝트 1 — 월간 동향 리포트 생성기 | 10-1 |
+| `bot.py` | 프로젝트 2 — 출처를 밝히는 질의응답 봇 | 10-2 |
 | `build_pg.py` | PostgreSQL 색인 (tsvector + pgvector + pg_bigm) | 07-3 |
 | `search_pg.py` | PostgreSQL 검색, RRF를 SQL 한 번에 | 07-4 |
 | `evaluate.py` | Recall@k / Hit@k / MRR 측정 | 08-1, 08-2 |
@@ -65,10 +70,21 @@ python -m src.search_pg "AI 규제 법안이 통과된 나라"
 # 8) 두 DB 비교
 python -m src.bench
 
-# 9) 품질 대시보드 (10-3)
+# 9) LLM 없이 확인되는 부분 (API 키 불필요)
+python -m src.verify                       # 인용 검증 4종 판정
+python -m src.agent --budget-scan          # 예산별 컨텍스트 크기
+python -m src.report --ym 2026-03 --collect-only
+python -m src.bot --retrieve-only "AI 규제 법안이 통과된 나라"
+
+# 10) LLM을 붙여 끝까지 (ANTHROPIC_API_KEY 필요)
+python -m src.agent "AI 규제 법안이 통과된 나라"
+python -m src.bot
+python -m src.report --ym 2026-03
+
+# 11) 품질 대시보드 (10-3)
 streamlit run src/dashboard.py
 
-# 10) 검색 비교 데모 (10-4) — http://localhost:8765
+# 12) 검색 비교 데모 (10-4) — http://localhost:8765
 uvicorn src.api:app --port 8765
 ```
 
