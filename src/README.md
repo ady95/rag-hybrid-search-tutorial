@@ -11,7 +11,7 @@
 | `pdf_to_md.py` | PDF → 마크다운 변환 (pdfplumber, 폰트 크기로 헤딩 추정) | 03-2 |
 | `chunker.py` | 헤딩 경계 기반 청킹 | 03-3 |
 | `tokenizer_ko.py` | Kiwi 형태소 토큰화, FTS5/tsquery 변환 | 02-3, 04-2 |
-| `embedder.py` | 임베딩 생성 (local / server / openai 3종 백엔드) | 02-4, 05-1 |
+| `embedder.py` | 임베딩 생성 (자체 서버 API / OpenAI API 2종 백엔드) | 02-4, 05-1 |
 | `build_sqlite.py` | SQLite 색인 (FTS5 + trigram + sqlite-vec) | 04-3, 05-3 |
 | `search_sqlite.py` | SQLite 하이브리드 검색 + RRF 융합 | 04, 05, 06 |
 | `compare_modes.py` | 네 가지 검색 모드 비교 도구 | 06-4 |
@@ -20,6 +20,10 @@
 | `evaluate.py` | Recall@k / Hit@k / MRR 측정 | 08-1, 08-2 |
 | `bench.py` | SQLite vs PostgreSQL 비교 벤치마크 | 07-5, 08-3 |
 | `bench_scale.py` | 규모를 키웠을 때의 성능 관찰 | 08-3 |
+| `ablation.py` | 구성 요소를 하나씩 빼 보는 절제 실험 | 06-3 |
+| `eval_ragas.py` | RAGAS 기반 검색·생성 품질 평가 | 08-6 |
+| `dashboard.py` | Streamlit 검색 품질 대시보드 | 10-3 |
+| `fetch_spri.py` | 샘플 PDF(SPRi AI 브리프) 내려받기 | 03-1 |
 
 ## 실행 순서
 
@@ -54,6 +58,9 @@ python -m src.search_pg "AI 규제 법안이 통과된 나라"
 
 # 8) 두 DB 비교
 python -m src.bench
+
+# 9) 품질 대시보드 (10-3)
+streamlit run src/dashboard.py
 ```
 
 ## 임베딩 백엔드 고르기
