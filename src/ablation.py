@@ -17,7 +17,7 @@ term/typo 는 정답을 "원문에 그 문자열이 실제로 든 청크"로 정
 import argparse
 import sys
 
-from src import config, tokenizer_ko
+from src import config, embedder, tokenizer_ko
 from src.build_sqlite import connect
 from src.evaluate import hit_at_k, load, recall_at_k, rr
 from src.search_sqlite import (rrf_fuse, search_fallback, search_keyword,
@@ -134,8 +134,8 @@ def main():
     a = ap.parse_args()
 
     conn = connect()
-    search_keyword(conn, "예열")
-    search_semantic(conn, "예열")
+    tokenizer_ko.warmup()
+    embedder.warmup()
 
     names = {"manual": "수동 평가셋 (자연어 질문)",
              "term": "미등록어 평가셋 (단독 고유명사)",

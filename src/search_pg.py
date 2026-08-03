@@ -20,6 +20,7 @@ import time
 import psycopg
 
 from src import config, tokenizer_ko
+from src import embedder
 from src.embedder import embed
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -153,9 +154,9 @@ def main():
 
     conn = connect()
     # 예열
-    search(conn, "예열", mode="keyword", top_n=1)
+    tokenizer_ko.warmup()
     if a.mode in ("hybrid", "semantic"):
-        search(conn, "예열", mode="semantic", top_n=1, backend=a.backend)
+        embedder.warmup(backend=a.backend)
 
     t0 = time.perf_counter()
     res = search(conn, a.query, mode=a.mode, ym=a.ym, top_n=a.top, backend=a.backend)

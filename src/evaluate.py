@@ -18,7 +18,7 @@ import re
 import sys
 import time
 
-from src import config
+from src import config, embedder, tokenizer_ko
 from src.build_sqlite import connect
 from src.search_sqlite import search
 
@@ -138,8 +138,8 @@ def main():
         return
 
     # 예열
-    search(conn, "예열", mode="keyword", top_n=1)
-    search(conn, "예열", mode="semantic", top_n=1, backend=a.backend)
+    tokenizer_ko.warmup()
+    embedder.warmup(backend=a.backend)
 
     print(f"평가셋 {len(items)}개 "
           f"(auto {sum(1 for x in items if x.get('kind')=='auto')} / "

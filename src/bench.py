@@ -13,7 +13,7 @@ import time
 
 import psycopg
 
-from src import config
+from src import config, embedder, tokenizer_ko
 from src.build_sqlite import connect as sq_connect
 from src.evaluate import hit_at_k, load, recall_at_k, rr
 from src.search_pg import RRF_SQL, build_params
@@ -139,8 +139,8 @@ def bench_quality(sq, pg):
 def main():
     sq = sq_connect()
     pg = pg_connect()
-    sq_search(sq, "예열", mode="hybrid", top_n=1)
-    pg_search(pg, "예열", mode="hybrid", top_n=1)
+    tokenizer_ko.warmup()
+    embedder.warmup()
 
     bench_latency(sq, pg)
     bench_overlap(sq, pg)

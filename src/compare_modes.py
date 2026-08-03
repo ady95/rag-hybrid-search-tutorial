@@ -11,7 +11,7 @@ import argparse
 import sys
 import time
 
-from src import config
+from src import config, embedder, tokenizer_ko
 from src.build_sqlite import connect
 from src.search_sqlite import fetch, search
 
@@ -57,8 +57,8 @@ def main():
 
     # 예열 — Kiwi 사전 적재(첫 tokenize에 약 2초)와 임베딩 모델 적재가
     # 첫 질의 측정에 섞이지 않도록 미리 한 번씩 호출한다.
-    search(conn, "예열", mode="keyword", top_n=1)
-    search(conn, "예열", mode="semantic", top_n=1, backend=a.backend)
+    tokenizer_ko.warmup()
+    embedder.warmup(backend=a.backend)
 
     print(f"{'유형':<12} {'질의':<26} " + "".join(f"{m:>11}" for m in MODES))
     print("-" * 90)

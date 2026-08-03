@@ -62,6 +62,15 @@ def embed(texts, backend=None):
     return [d.embedding for d in sorted(r.data, key=lambda d: d.index)]
 
 
+def warmup(backend=None):
+    """임베딩 경로를 미리 데워 둔다.
+
+    첫 호출에는 모델 적재와 HTTP 연결 수립이 몰려 1초 이상 걸린다.
+    성능을 측정하기 전에 반드시 한 번 호출할 것. 입력 내용은 무관하다.
+    """
+    embed(["가"], backend=backend)
+
+
 def embed_batched(texts, batch=32, backend=None, progress=True):
     out = []
     for i in range(0, len(texts), batch):
