@@ -1,0 +1,39 @@
+# bge-m3 임베딩 API — CPU 전용 (02-4)
+#   docker compose -f deploy/docker-compose.embed-cpu.yml up -d --build
+name: bge-m3-api
+
+services:
+  embed-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    image: bge-m3-api:cpu
+    container_name: bge-m3-api-cpu
+    ports:
+      - "8000:8000"
+    volumes:
+      # 모델 가중치 캐시. 최초 1회만 내려받는다 (약 2.3 GB)
+      - bge-models:/models
+    environment:
+      HF_HOME: /models
+      EMBED_DEVICE: cpu
+      # 아래 cpus 값과 반드시 같게 맞출 것.
+      # torch는 컨테이너 제한을 못 보고 호스트 코어 수만큼 스레드를 띄운다.
+      OMP_NUM_THREADS: "8"
+    deploy:
+      resources:
+        limits:
+          cpus: "8"
+          memory: 6G
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8000/health').status==200 else sys.exit(1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      # 최초 기동 시 모델을 내려받으므로 넉넉히 잡는다. 짧으면 재시작 루프에 빠진다.
+      start_period: 180s
+    restart: unless-stopped
+
+volumes:
+  bge-models:

@@ -63,18 +63,24 @@ python -m src.bench
 
 | 값 | 방식 | 모델 | 차원 | 비고 |
 |----|------|------|------|------|
-| `server` (기본) | 자체 임베딩 서버 | BAAI/bge-m3 | 1024 | `deploy/embed_openai_server.py` 로 기동 |
+| `server` (기본) | 자체 API | BAAI/bge-m3 | 1024 | `deploy/embed_openai_server.py` 로 기동. GPU 없이 CPU로도 동작 |
 | `openai` | OpenAI 임베딩 API | text-embedding-3-small | 1536 | `OPENAI_API_KEY` 필요 |
 
 백엔드를 바꾸면 차원이 달라지므로 `EMBED_DIM` 도 함께 바꾸고 **재색인**해야 합니다.
 
-자체 서버 기동:
+자체 API 기동 — 별도 장비가 필요하지 않습니다. 노트북에서 띄워도 됩니다.
 
 ```bash
 pip install fastapi uvicorn FlagEmbedding
-uvicorn deploy.embed_openai_server:app --host 0.0.0.0 --port 8000
-curl http://localhost:8000/health
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU로 돌릴 때
+
+EMBED_DEVICE=cpu OMP_NUM_THREADS=8 uvicorn deploy.embed_openai_server:app --port 8000
+curl http://localhost:8000/health      # {"status":"ok","device":"cpu"}
 ```
+
+GPU가 있으면 `EMBED_DEVICE=cuda:0` 로 바꾸면 됩니다. 도커로 띄우려면
+`deploy/Dockerfile.cpu` 와 `deploy/docker-compose.embed-cpu.yml` 을 쓰세요
+(CPU 전용 이미지 약 1.69 GB).
 
 ## 주의
 

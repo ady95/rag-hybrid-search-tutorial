@@ -1,0 +1,28 @@
+# bge-m3 임베딩 API — CPU 전용 (02-4)
+#
+# CUDA 베이스 이미지(약 6.7 GB) 대신 CPU 전용 torch 휠을 쓴다.
+# 빌드 결과 약 1.69 GB로 1/4 수준.
+#
+#   docker build -f deploy/Dockerfile.cpu -t bge-m3-api:cpu .
+#   docker run -p 8000:8000 -v bge-models:/models bge-m3-api:cpu
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HF_HOME=/models \
+    EMBED_DEVICE=cpu
+
+WORKDIR /app
+
+# CPU 전용 torch 휠 (CUDA 라이브러리 미포함 -> 이미지 크기 대폭 감소)
+RUN pip install --no-cache-dir torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+
+RUN pip install --no-cache-dir fastapi uvicorn FlagEmbedding
+
+COPY embed_openai_server.py .
+
+EXPOSE 8000
+
+# CPU에서는 워커를 늘리는 편이 동시 처리에 유리하다 (encode 락이 프로세스 내부를
+# 직렬화하므로). 워커당 RAM 약 2.4 GB를 잡고 코어 수에 맞춰 조정할 것.
+CMD ["uvicorn", "embed_openai_server:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

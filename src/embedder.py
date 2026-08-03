@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""임베딩 생성기 — OpenAI API와 자체 서버를 같은 코드로 다룬다.
+"""임베딩 생성기 — OpenAI API와 자체 API를 같은 코드로 다룬다.
 
-자체 서버(`deploy/embed_openai_server.py`)가 OpenAI와 **같은 규격**
+자체 API(`deploy/embed_openai_server.py`)가 OpenAI와 **같은 규격**
 (`POST /v1/embeddings`)으로 응답하므로, 바뀌는 것은 `base_url` 하나뿐이다.
 분기문도 응답 파싱 코드도 따로 둘 필요가 없다.
 
   EMBED_BACKEND=openai   OpenAI API        (text-embedding-3-small, 1536차원)
-  EMBED_BACKEND=server   자체 bge-m3 서버   (1024차원)
+  EMBED_BACKEND=server   자체 bge-m3 API    (1024차원, GPU 없이 CPU로도 동작)
 
 사용:
   python -m src.embedder
@@ -30,7 +30,7 @@ _model = None
 def get_client(backend=None):
     """백엔드에 맞는 OpenAI 클라이언트를 만든다 (한 번만).
 
-    자체 서버는 인증을 요구하지 않지만 SDK가 키를 요구하므로
+    자체 API는 인증을 요구하지 않지만 SDK가 키를 요구하므로
     아무 문자열이나 넣어 준다.
     """
     global _client, _model
