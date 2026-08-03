@@ -30,6 +30,10 @@ ragas==0.3.0
 streamlit==1.27.1
 pandas==2.3.2
 
+# 검색 비교 데모 API (10-4). 화면은 src/static/index.html 한 파일이라 npm이 필요 없다.
+fastapi==0.115.0
+uvicorn==0.44.0
+
 # 공통
 numpy==1.26.4
 requests==2.32.5

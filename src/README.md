@@ -23,6 +23,7 @@
 | `ablation.py` | 구성 요소를 하나씩 빼 보는 절제 실험 | 06-3 |
 | `eval_ragas.py` | RAGAS 기반 검색·생성 품질 평가 | 08-6 |
 | `dashboard.py` | Streamlit 검색 품질 대시보드 | 10-3 |
+| `api.py` + `static/` | 네 모드를 나란히 보는 검색 비교 데모 (FastAPI) | 10-4 |
 | `fetch_spri.py` | 샘플 PDF(SPRi AI 브리프) 내려받기 | 03-1 |
 
 ## 실행 순서
@@ -61,6 +62,9 @@ python -m src.bench
 
 # 9) 품질 대시보드 (10-3)
 streamlit run src/dashboard.py
+
+# 10) 검색 비교 데모 (10-4) — http://localhost:8765
+uvicorn src.api:app --port 8765
 ```
 
 ## 임베딩 백엔드 고르기
