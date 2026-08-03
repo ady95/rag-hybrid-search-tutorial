@@ -11,6 +11,7 @@
 | `pdf_to_md.py` | PDF → 마크다운 변환 (pdfplumber, 폰트 크기로 헤딩 추정) | 03-2 |
 | `chunker.py` | 헤딩 경계 기반 청킹 | 03-3 |
 | `tokenizer_ko.py` | Kiwi 형태소 토큰화, FTS5/tsquery 변환 | 02-3, 04-2 |
+| `dict_miner.py` | 사용자 사전 후보 채굴 (승인은 `data/userdict.json`) | 04-5 |
 | `embedder.py` | 임베딩 생성 (자체 서버 API / OpenAI API 2종 백엔드) | 02-4, 05-1 |
 | `build_sqlite.py` | SQLite 색인 (FTS5 + trigram + sqlite-vec) | 04-3, 05-3 |
 | `search_sqlite.py` | SQLite 하이브리드 검색 + RRF 융합 | 04, 05, 06 |
@@ -41,6 +42,10 @@ python -m src.chunker
 
 # 3) SQLite 색인 (임베딩 생성 포함)
 python -m src.build_sqlite
+
+# 3-1) 사용자 사전 후보 뽑아 보기 (04-5)
+#      data/userdict.json 에서 true 로 바꾼 뒤 재색인해야 반영된다
+python -m src.dict_miner
 
 # 4) 검색해 보기
 python -m src.search_sqlite "AI 규제 법안이 통과된 나라"
