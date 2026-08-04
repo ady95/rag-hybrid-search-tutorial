@@ -11,6 +11,7 @@ import argparse
 import os
 import sys
 import time
+from datetime import date
 from pathlib import Path
 
 from src import config, embedder, tokenizer_ko
@@ -38,7 +39,7 @@ SECTION_SYSTEM = """당신은 AI 동향 리포트를 작성하는 애널리스�
 - 없는 숫자·날짜·기관명을 만들지 않습니다."""
 
 
-def collect(conn, ym, topics=TOPICS, per_topic=5, count_tokens=len):
+def collect(conn, ym, topics=TOPICS, per_topic=5, count_tokens=count_tokens):
     out, seen = [], set()
     for title, query in topics:
         res = search(conn, query, mode="hybrid", ym=ym, top_n=per_topic)
@@ -84,7 +85,8 @@ def build_report(conn, ym, out_path):
         lines += [f"## {s['title']}", "", text, ""]
 
     lines += ["---",
-              f"근거 자료 {len(set(total_ids))}건 · SPRi AI 브리프 {ym} · 생성 자동"]
+              f"근거 자료 {len(set(total_ids))}건 · SPRi AI 브리프 {ym}"
+              f" · 생성 {date.today()}"]
     Path(out_path).write_text("\n".join(lines), encoding="utf-8")
     return flagged
 
